@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/app/_components/Button";
 import { Socket } from "socket.io-client";
 
 const SendMessageBtn = ({ socket }: { socket: Socket }) => {
@@ -10,7 +11,8 @@ const SendMessageBtn = ({ socket }: { socket: Socket }) => {
   };
   return (
     <>
-      <button onClick={onClick}>ALOU</button>
+    
+      <Button onClick={onClick} label="Enviar mensagem" />
     </>
   );
 };

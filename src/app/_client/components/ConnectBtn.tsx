@@ -1,34 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import Button from "@/app/_components/Button";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
 
 const ConnectBtn = ({ socket }: { socket: Socket }) => {
   const [isActive, setIsActive] = useState<boolean>(socket.active);
 
+  useEffect(() => {
+    const onConnect = () => {
+      setIsActive(true);
+      toast.success("Conectado!");
+    };
+    const onDisconnect = () => {
+      setIsActive(false);
+      toast.error("Desconectado!");
+    };
+    const onConnectError = (err: any) => {
+      setIsActive(false);
+      toast.error("Erro de conexão:" + err);
+    };
+    const onErro = (err: any) => {
+      toast.error("Erro:" + err);
+      setIsActive(false);
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("erro", onErro);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("erro", onErro);
+    };
+  }, [socket]);
+
   const toggleConnect = () => {
-    if (!isActive) {
-      socket.connect();
-      setIsActive(!isActive);
-      return null;
-    }
-    socket.disconnect();
-    setIsActive(!isActive);
+    isActive ? socket.disconnect() : socket.connect();
   };
-
-  socket.on("connect", () => {
-    setIsActive(true);
-  });
-
-  socket.on("connect_error", (err) => {
-    setIsActive(false);
-    alert("Erro:" + err);
-  });
-
-  socket.on("erro", () => {
-    console.log("err");
-    setIsActive(false);
-  });
 
   return (
     <>
@@ -37,11 +50,10 @@ const ConnectBtn = ({ socket }: { socket: Socket }) => {
         {isActive ? "🟢Conectado" : "🔴Desconectado"}
       </span>
       <br />
-      <button
+      <Button
+        label={isActive ? "Desconectar" : "Conectar"}
         onClick={toggleConnect}
-        className="cursor-pointer hover:scale-105 duration-300 hover:bg-gray-500">
-        {isActive ? <span>Desconectar</span> : <span>Conectar</span>}
-      </button>
+      />
     </>
   );
 };
