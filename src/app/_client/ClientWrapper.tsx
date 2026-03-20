@@ -7,12 +7,14 @@ import SendMessageBtn from "./components/SendMessageBtn";
 import Button from "../_components/Button";
 import UserForm from "./components/UserForm";
 
+const SOCKET_PORT = "http://localhost:5500";
+
 const ClientWrapper = () => {
   const [userId, setUserId] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
 
   const handleConnect = () => {
-    const newSocket = io("http://localhost:5500", {
+    const newSocket = io(SOCKET_PORT, {
       autoConnect: false,
       reconnection: true,
       auth: { userId },

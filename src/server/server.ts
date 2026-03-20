@@ -1,7 +1,9 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
+
 let activeConnections = 0;
 const MAX_CONNECTIONS = 2;
+const connectedUserIds = new Set<string>();
 
 const server = createServer();
 
@@ -23,6 +25,8 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
+  const userId = socket.data.userId;
+
   if (activeConnections >= MAX_CONNECTIONS) {
     console.log("Limite de conexões atingido. Recusando nova conexão.");
     socket.emit(
@@ -32,9 +36,18 @@ io.on("connection", (socket) => {
     socket.disconnect();
     return;
   }
-  activeConnections++;
 
-  const userId = socket.data.userId;
+  if (connectedUserIds.has(userId)) {
+    console.log(
+      `UserId '${userId}' já está conectado. Recusando nova conexão.`,
+    );
+    socket.emit("erro", "Este userId já está em uso. Escolha outro.");
+    socket.disconnect();
+    return;
+  }
+
+  activeConnections++;
+  connectedUserIds.add(userId);
 
   socket.join(`user:${userId}`);
 
@@ -47,6 +60,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     activeConnections--;
+    connectedUserIds.delete(userId);
     console.log(`Usuário [${userId}] desconectou`);
   });
 });
