@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "24.14.0"
+  },
   "name": "projetin",
   "version": "0.1.0",
   "private": true,

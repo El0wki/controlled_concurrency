@@ -4,25 +4,37 @@ import { useState } from "react";
 import { Socket } from "socket.io-client";
 
 const ConnectBtn = ({ socket }: { socket: Socket }) => {
-  const [isActive, setIsActive] = useState<boolean>(false);
+  const [isActive, setIsActive] = useState<boolean>(socket.active);
 
   const toggleConnect = () => {
-    try {
-      setIsActive(!socket.active);
-      if (!socket.active) {
-        socket.connect();
-        return;
-      }
-      socket.disconnect();
-    } catch (e) {
-      console.error(e);
+    if (!isActive) {
+      socket.connect();
+      setIsActive(!isActive);
+      return null;
     }
+    socket.disconnect();
+    setIsActive(!isActive);
   };
+
+  socket.on("connect", () => {
+    setIsActive(true);
+  });
+
+  socket.on("connect_error", (err) => {
+    setIsActive(false);
+    alert("Erro:" + err);
+  });
+
+  socket.on("erro", () => {
+    console.log("err");
+    setIsActive(false);
+  });
+
   return (
     <>
       <span>
         Status:
-        {isActive ? <span>🟢Conectado</span> : <span>🔴Desconectado</span>}
+        {isActive ? "🟢Conectado" : "🔴Desconectado"}
       </span>
       <br />
       <button

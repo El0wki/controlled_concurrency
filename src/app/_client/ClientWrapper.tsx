@@ -1,20 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { io, Socket } from "socket.io-client";
-import ConnectBtn from "./Connect";
+import { io } from "socket.io-client";
+import ConnectBtn from "./components/ConnectBtn";
+import SendMessageBtn from "./components/SendMessageBtn";
 
-const ClientWrapper = ({
-  data,
-}: {
-  data: { cliente: string; mensagem: string }[];
-}) => {
-  const socket: Socket = io("http://localhost:5500", {
+const ClientWrapper = () => {
+  const socket = io("http://localhost:5500", {
     autoConnect: false,
+    reconnection: false,
+    auth: {
+      userId: "123",
+    },
   });
 
   return (
     <>
+      <SendMessageBtn socket={socket} />
       <ConnectBtn socket={socket} />
     </>
   );
