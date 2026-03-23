@@ -6,26 +6,21 @@ import ConnectBtn from "./components/ConnectBtn";
 import SendMessageBtn from "./components/SendMessageBtn";
 import Button from "../_components/Button";
 import UserForm from "./components/UserForm";
+import { useSocket } from "./store/useSocket";
 
 const SOCKET_PORT = "http://localhost:5500";
 
 const ClientWrapper = () => {
   const [userId, setUserId] = useState("");
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const { isConnected, connect, disconnect, socket } = useSocket();
 
   const handleConnect = () => {
-    const newSocket = io(SOCKET_PORT, {
-      autoConnect: false,
-      reconnection: true,
-      auth: { userId },
-    });
-    setSocket(newSocket);
+    connect(userId);
   };
 
   const handleChangeUser = () => {
-    if (socket) {
-      socket.disconnect();
-      setSocket(null);
+    if (isConnected) {
+      disconnect();
     }
     setUserId("");
   };
@@ -51,7 +46,7 @@ const ClientWrapper = () => {
       {socket ? (
         <>
           <ConnectBtn socket={socket} />
-          {socket.active ? <SendMessageBtn socket={socket} /> : null}
+          {isConnected ? <SendMessageBtn socket={socket} /> : null}
         </>
       ) : null}
     </>
