@@ -1,26 +1,41 @@
 "use client";
 
 import Button from "@/app/_components/Button";
-import { useState } from "react";
-import { Socket } from "socket.io-client";
+import { useState, useEffect } from "react";
 
-const SendMessageBtn = ({ socket }: { socket: Socket }) => {
-  const [text, setText] = useState<string>("");
+type Props = {
+  socket: WebSocket;
+};
+
+const SendMessageBtn = ({ socket }: Props) => {
+  const [text, setText] = useState("");
+  const [response, setResponse] = useState("");
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      setResponse(event.data);
+    };
+    socket.addEventListener("message", handleMessage);
+    return () => {
+      socket.removeEventListener("message", handleMessage);
+    };
+  }, [socket]);
 
   const onClick = () => {
-    socket.emit("mensagem", text, (resposta: string) => {
-      console.log("Resposta do servidor:", resposta);
-    });
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(text);
+    }
   };
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <input
-        onChange={(e) => {
-          setText(e.currentTarget.value);
-        }}
-        value={text}
-      />
+      <input onChange={(e) => setText(e.currentTarget.value)} value={text} />
       <Button onClick={onClick} label="Enviar mensagem" />
+      {response && (
+        <div>
+          <strong>Resposta do servidor:</strong> {response}
+        </div>
+      )}
     </form>
   );
 };

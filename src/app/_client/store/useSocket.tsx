@@ -1,34 +1,50 @@
+"use server";
+
 import { create } from "zustand";
-import { io, Socket } from "socket.io-client";
+import { PORT } from "@/configs";
+import { createConnection, Socket } from "net";
 
 type SocketStore = {
   socket: Socket | null;
   isConnected: boolean;
-  connect: (userId: string) => void;
+  connect: () => void;
   disconnect: () => void;
+  sendMessage: (msg: string) => void;
 };
 
 export const useSocket = create<SocketStore>((set, get) => ({
   socket: null,
   isConnected: false,
-  connect: (userId: string) => {
+  connect: () => {
     if (get().socket) {
-      get().socket?.disconnect();
+      get().socket?.end();
     }
-    const newSocket = io("http://localhost:5500", {
-      autoConnect: false,
-      reconnection: true,
-      auth: { userId },
+    const client = createConnection({ port: PORT }, () => {});
+
+    client.on("connect", () => {
+      set({ isConnected: true });
+    });
+    client.on("error", () => {
+      set({ isConnected: false, socket: null });
     });
 
-    newSocket.on("connect", () => set({ isConnected: true }));
-    newSocket.on("disconnect", () => set({ isConnected: false }));
+    client.on("end", () => {
+      set({ isConnected: false });
+    });
 
-    newSocket.connect();
-    set({ socket: newSocket });
+    set({ socket: client });
   },
   disconnect: () => {
-    get().socket?.disconnect();
-    set({ socket: null, isConnected: false });
+    const client = get().socket;
+    if (client) {
+      client.end(); // encerra a conexão TCP
+      set({ socket: null, isConnected: false });
+    }
+  },
+  sendMessage: (msg: string) => {
+    const client = get().socket;
+    if (client && client.writable) {
+      client.write(msg + "\n");
+    }
   },
 }));

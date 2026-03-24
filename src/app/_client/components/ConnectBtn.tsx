@@ -1,23 +1,31 @@
 "use client";
 
 import Button from "@/app/_components/Button";
-import toast from "react-hot-toast";
-import { Socket } from "socket.io-client";
 
-const ConnectBtn = ({ socket }: { socket: Socket }) => {
+type Props = {
+  socket: WebSocket;
+};
+
+const ConnectBtn = ({ socket }: Props) => {
+  const isConnected = socket.readyState === WebSocket.OPEN;
+
   const toggleConnect = () => {
-    socket.connected ? socket.disconnect() : socket.connect();
+    if (isConnected) {
+      socket.close();
+    } else {
+      alert("Para conectar novamente, clique em 'Entrar' na tela principal.");
+    }
   };
 
   return (
     <>
       <span>
         Status:
-        {socket.connected ? "🟢Conectado" : "🔴Desconectado"}
+        {isConnected ? "🟢Conectado" : "🔴Desconectado"}
       </span>
       <br />
       <Button
-        label={socket.connected ? "Desconectar" : "Conectar"}
+        label={isConnected ? "Desconectar" : "Conectar"}
         onClick={toggleConnect}
       />
     </>

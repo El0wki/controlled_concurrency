@@ -3,7 +3,7 @@ import net from "net";
 const PORT = 6000;
 
 let activeConnections = 0;
-const MAX_CONNECTIONS = 8;
+const MAX_CONNECTIONS = 1;
 
 const server = net.createServer((socket) => {
   if (activeConnections >= MAX_CONNECTIONS) {
