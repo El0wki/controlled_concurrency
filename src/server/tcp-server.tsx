@@ -1,9 +1,7 @@
 import net from "net";
-
-const PORT = 6000;
+import { MAX_CONNECTIONS, TCP_PORT } from "../configs";
 
 let activeConnections = 0;
-const MAX_CONNECTIONS = 1;
 
 const server = net.createServer((socket) => {
   if (activeConnections >= MAX_CONNECTIONS) {
@@ -11,8 +9,8 @@ const server = net.createServer((socket) => {
     socket.end();
     return;
   }
+
   activeConnections++;
-  console.log(`Cliente conectado! Conexões ativas: ${activeConnections}`);
 
   socket.on("data", (data) => {
     const input = data.toString().trim();
@@ -22,15 +20,13 @@ const server = net.createServer((socket) => {
 
   socket.on("end", () => {
     activeConnections--;
-    console.log(`Cliente desconectado. Conexões ativas: ${activeConnections}`);
   });
 
   socket.on("error", () => {
     activeConnections--;
-    console.log(`Erro na conexão. Conexões ativas: ${activeConnections}`);
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Servidor TCP rodando na porta ${PORT}`);
+server.listen(TCP_PORT, () => {
+  console.log(`[TCP] Servidor rodando na porta ${TCP_PORT}`);
 });

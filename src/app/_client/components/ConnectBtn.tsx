@@ -3,18 +3,15 @@
 import Button from "@/app/_components/Button";
 
 type Props = {
-  socket: WebSocket;
+  isConnected: boolean;
+  connect: () => void;
+  disconnect: () => void;
 };
 
-const ConnectBtn = ({ socket }: Props) => {
-  const isConnected = socket.readyState === WebSocket.OPEN;
-
+const ConnectBtn = ({ isConnected, connect, disconnect }: Props) => {
+  
   const toggleConnect = () => {
-    if (isConnected) {
-      socket.close();
-    } else {
-      alert("Para conectar novamente, clique em 'Entrar' na tela principal.");
-    }
+    isConnected ? disconnect() : connect();
   };
 
   return (

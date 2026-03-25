@@ -1,5 +1,3 @@
-"use client";
-
 import { create } from "zustand";
 
 const WS_URL = "ws://localhost:9000";
@@ -28,10 +26,12 @@ export const useSocket = create<SocketStore>((set, get) => ({
     const ws = new WebSocket(WS_URL);
 
     ws.onopen = () => set({ isConnected: true });
+
     ws.onmessage = (e) => {
       const data: Message = JSON.parse(e.data);
       set((s) => ({ messages: [...s.messages, data] }));
     };
+
     ws.onerror = () => set({ isConnected: false, socket: null });
     ws.onclose = () => set({ isConnected: false, socket: null });
 

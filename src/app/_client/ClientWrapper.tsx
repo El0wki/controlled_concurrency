@@ -8,38 +8,29 @@ import UserForm from "./components/UserForm";
 import { useSocket } from "./store/useSocket";
 
 const ClientWrapper = () => {
-  const [userId, setUserId] = useState("");
-  const { isConnected, connect, disconnect, socket } = useSocket();
+  const { connect, isConnected, disconnect, sendMessage, messages } =
+    useSocket();
 
-  const handleConnect = () => {
-    console.log("vray");
-    connect();
-  };
-
-  const handleChangeUser = () => {
-    if (isConnected) {
-      disconnect();
-    }
-    setUserId("");
-  };
-
-  const button = socket ? (
-    <Button label="Trocar usuário" onClick={handleChangeUser} />
-  ) : (
-    <Button onClick={handleConnect} disabled={!userId} label="Entrar" />
-  );
   return (
     <>
-      <UserForm
-        formBtn={button}
-        inputProps={{
-          id: "userid",
-          value: userId,
-          onChange: (e) => setUserId(e.target.value),
-          placeholder: "Digite o userId",
-          disabled: !!socket,
-        }}
+      <ConnectBtn
+        isConnected={isConnected}
+        connect={connect}
+        disconnect={disconnect}
       />
+
+      {isConnected ? (
+        <>
+          <SendMessageBtn sendMessage={sendMessage} />
+          <div className="bg-black text-green-400 p-16 min-h-200 rounded-sm">
+            {messages.map((m, i) => (
+              <div key={i}>
+                [{m.type}] {m.message}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
     </>
   );
 };
