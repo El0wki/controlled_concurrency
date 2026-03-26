@@ -8,6 +8,21 @@ const ClientWrapper = () => {
   const { connect, isConnected, disconnect, sendMessage, messages } =
     useSocket();
 
+  const box = () => {
+    return (
+      <>
+        <SendMessageBtn sendMessage={sendMessage} />
+        <div className="bg-black text-green-400 p-16  rounded-sm">
+          {messages.map((message, index) => (
+            <div key={index}>
+              [{message.type}] {message.message}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="bg-white w-max p-12 rounded-xl flex flex-col">
       <ConnectBtn
@@ -16,18 +31,7 @@ const ClientWrapper = () => {
         disconnect={disconnect}
       />
 
-      {isConnected ? (
-        <>
-          <SendMessageBtn sendMessage={sendMessage} />
-          <div className="bg-black text-green-400 p-16  rounded-sm">
-            {messages.map((message, index) => (
-              <div key={index}>
-                [{message.type}] {message.message}
-              </div>
-            ))}
-          </div>
-        </>
-      ) : null}
+      {isConnected ? box() : null}
     </div>
   );
 };
