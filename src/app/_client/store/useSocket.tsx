@@ -1,8 +1,7 @@
 "use client";
 
+import { WS_PORT } from "../../../../configs";
 import { create } from "zustand";
-
-const WS_URL = "ws://localhost:9000";
 
 type Message = {
   type: "status" | "message" | "error";
@@ -25,7 +24,7 @@ export const useSocket = create<SocketStore>((set, get) => ({
 
   connect: () => {
     get().socket?.close();
-    const ws = new WebSocket(WS_URL);
+    const ws = new WebSocket("ws://localhost:" + WS_PORT);
 
     ws.onopen = () => set({ isConnected: true });
     ws.onmessage = (e) => {

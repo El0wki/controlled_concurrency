@@ -16,7 +16,12 @@ const SendMessageBtn = ({ sendMessage }: Props) => {
         e.preventDefault();
         sendMessage(text);
       }}>
-      <input onChange={(e) => setText(e.currentTarget.value)} value={text} />
+      <input
+        className="rounded-lg border-1 p-2"
+        onChange={(e) => setText(e.currentTarget.value)}
+        placeholder="Digite sua mensagem..."
+        value={text}
+      />
       <Button label="Enviar mensagem" />
     </form>
   );

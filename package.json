@@ -6,10 +6,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "tcp": "tsx src/server/tcp-server.tsx",
-    "ws": "tsx src/server/ws-server.tsx",
-    "dev": "concurrently \"npm run tcp\" \"npm run ws\" \"next dev\""
+    "tcp:seq": "tsx server/tcp-sequencial.ts",
+    "tcp:conc": "tsx server/tcp-concorrente.ts",
+    "tcp:conc8": "tsx server/tcp-concorrente-8.ts",
+    "dev:seq": "concurrently \"npm run tcp:seq\" \"npm run ws\" \"next dev\"",
+    "dev:conc": "concurrently \"npm run tcp:conc\" \"npm run ws\" \"next dev\"",
+    "dev:conc8": "concurrently \"npm run tcp:conc8\" \"npm run ws\" \"next dev\"",
+    "ws": "tsx server/ws-server.ts",
+    "dev": "concurrently \"npm run tcp:conc8\" \"npm run ws\" \"next dev\""
   },
+  "type": "module",
   "dependencies": {
     "next": "16.1.6",
     "react": "19.2.3",

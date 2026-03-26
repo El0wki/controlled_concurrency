@@ -14,9 +14,8 @@ wss.on("connection", (ws) => {
   ws.on("message", (msg) => tcpClient.write(msg.toString() + "\n"));
 
   tcpClient.on("data", (data) => {
-    ws.send(
-      JSON.stringify({ type: "message", message: data.toString().trim() }),
-    );
+    const msg = data.toString();
+    ws.send(JSON.stringify({ type: "message", message: msg.trim() }));
   });
 
   ws.on("close", () => tcpClient.end());

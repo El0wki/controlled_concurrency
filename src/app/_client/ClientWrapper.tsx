@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import ConnectBtn from "./components/ConnectBtn";
 import SendMessageBtn from "./components/SendMessageBtn";
-import Button from "../_components/Button";
-import UserForm from "./components/UserForm";
 import { useSocket } from "./store/useSocket";
 
 const ClientWrapper = () => {
@@ -12,7 +9,7 @@ const ClientWrapper = () => {
     useSocket();
 
   return (
-    <>
+    <div className="bg-white w-max p-12 rounded-xl flex flex-col">
       <ConnectBtn
         isConnected={isConnected}
         connect={connect}
@@ -22,16 +19,16 @@ const ClientWrapper = () => {
       {isConnected ? (
         <>
           <SendMessageBtn sendMessage={sendMessage} />
-          <div className="bg-black text-green-400 p-16 min-h-200 rounded-sm">
-            {messages.map((m, i) => (
-              <div key={i}>
-                [{m.type}] {m.message}
+          <div className="bg-black text-green-400 p-16  rounded-sm">
+            {messages.map((message, index) => (
+              <div key={index}>
+                [{message.type}] {message.message}
               </div>
             ))}
           </div>
         </>
       ) : null}
-    </>
+    </div>
   );
 };
 
